@@ -1,6 +1,7 @@
 package mmap
 
 import (
+	"errors"
 	"io/ioutil"
 	"os"
 	"testing"
@@ -86,6 +87,24 @@ func TestMmapNewReadWrite(t *testing.T) {
 	p, err := ioutil.ReadFile(f)
 	tt.AssertIsNotError(t, err)
 	tt.AssertEqual(t, expect, p)
+}
+
+func TestNotExistFile(t *testing.T) {
+	t.Run("not-exist-readonly", func(t *testing.T) {
+		mmap, err := New(NewReadOnly("/path/to/not-exist"))
+		tt.AssertIsError(t, err)
+		tt.AssertTrue(t, os.IsNotExist(err))
+		tt.AssertTrue(t, errors.Is(err, os.ErrNotExist))
+		tt.AssertIsNil(t, mmap)
+	})
+
+	t.Run("not-exist-readwrite", func(t *testing.T) {
+		mmap, err := New(NewReadWrite("/path/to/not-exist"))
+		tt.AssertIsError(t, err)
+		tt.AssertTrue(t, os.IsNotExist(err))
+		tt.AssertTrue(t, errors.Is(err, os.ErrNotExist))
+		tt.AssertIsNil(t, mmap)
+	})
 }
 
 func closeMmap(t *testing.T, m *Mmap) {
