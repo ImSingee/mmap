@@ -1,10 +1,11 @@
 package mmap
 
 import (
-	"github.com/ImSingee/tt"
 	"io/ioutil"
 	"os"
 	"testing"
+
+	"github.com/ImSingee/tt"
 )
 
 const HelloWorld = "Hello world!"
@@ -49,7 +50,7 @@ func TestMmapNewEmptyReadWrite(t *testing.T) {
 	copy(expect[8:], []byte(HelloWorld))
 	tt.AssertEqual(t, expect, mmap.data)
 
-	p, err := os.ReadFile(f)
+	p, err := ioutil.ReadFile(f)
 	tt.AssertIsNotError(t, err)
 	tt.AssertEqual(t, expect, p)
 }
@@ -82,7 +83,7 @@ func TestMmapNewReadWrite(t *testing.T) {
 	copy(expect[LenOfHelloWorld:], []byte(HelloWorld))
 	tt.AssertEqual(t, expect, mmap.data)
 
-	p, err := os.ReadFile(f)
+	p, err := ioutil.ReadFile(f)
 	tt.AssertIsNotError(t, err)
 	tt.AssertEqual(t, expect, p)
 }

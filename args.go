@@ -1,9 +1,10 @@
 package mmap
 
 import (
-	"golang.org/x/sys/unix"
 	"io/ioutil"
 	"os"
+
+	"golang.org/x/sys/unix"
 )
 
 type Opener interface {
