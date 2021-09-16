@@ -1,4 +1,4 @@
-name: Test Coverage
+name: Test and Coverage
 on: [push, workflow_dispatch]
 jobs:
   converage:
