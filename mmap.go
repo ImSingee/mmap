@@ -15,9 +15,10 @@ func New(args Opener) (*Mmap, error) {
 	}
 
 	m := &Mmap{
-		args: args,
-		grow: DefaultGrowPolicy,
-		data: nil,
+		args:   args,
+		grow:   DefaultGrowPolicy,
+		data:   nil,
+		closed: true,
 	}
 
 	return m, m.open(args.InitialSize())

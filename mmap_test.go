@@ -92,19 +92,33 @@ func TestMmapNewReadWrite(t *testing.T) {
 
 func TestNotExistFile(t *testing.T) {
 	t.Run("not-exist-readonly", func(t *testing.T) {
-		mmap, err := New(NewReadOnly("/path/to/not-exist"))
+		mmap, err := New(&Args{
+			File:       "/path/to/not-exist",
+			InitLength: 1,
+			Readonly:   true,
+			Private:    false,
+		})
 		tt.AssertIsError(t, err)
 		tt.AssertTrue(t, os.IsNotExist(err))
 		tt.AssertTrue(t, errors.Is(err, os.ErrNotExist))
-		tt.AssertIsNil(t, mmap)
+
+		tt.AssertIsNotNil(t, mmap)
+		tt.AssertTrue(t, mmap.IsClosed())
 	})
 
 	t.Run("not-exist-readwrite", func(t *testing.T) {
-		mmap, err := New(NewReadWrite("/path/to/not-exist"))
+		mmap, err := New(&Args{
+			File:       "/path/to/not-exist",
+			InitLength: 1,
+			Readonly:   false,
+			Private:    false,
+		})
 		tt.AssertIsError(t, err)
 		tt.AssertTrue(t, os.IsNotExist(err))
 		tt.AssertTrue(t, errors.Is(err, os.ErrNotExist))
-		tt.AssertIsNil(t, mmap)
+
+		tt.AssertIsNotNil(t, mmap)
+		tt.AssertTrue(t, mmap.IsClosed())
 	})
 }
 
