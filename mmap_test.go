@@ -180,7 +180,12 @@ func closeMmap(t *testing.T, m *Mmap) {
 }
 
 func newHelloWorldFile() (string, error) {
-	f, err := ioutil.TempFile("", "")
+	d, err := ioutil.TempDir("", "")
+	if err != nil {
+		return "", err
+	}
+
+	f, err := ioutil.TempFile(d, "")
 	if err != nil {
 		return "", err
 	}
