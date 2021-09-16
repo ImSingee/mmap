@@ -11,6 +11,9 @@ var (
 )
 
 func (m *Mmap) ReadAt(p []byte, off int64) (n int, err error) {
+	if off > int64(len(p)) {
+		return 0, io.EOF
+	}
 	n = copy(p, m.data[off:])
 	if n < len(p) {
 		err = io.EOF
