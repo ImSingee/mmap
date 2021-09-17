@@ -1,7 +1,6 @@
 package mmap
 
 import (
-	"bytes"
 	"errors"
 	"io/ioutil"
 	"os"
@@ -119,63 +118,6 @@ func TestNotExistFile(t *testing.T) {
 
 		tt.AssertIsNotNil(t, mmap)
 		tt.AssertTrue(t, mmap.IsClosed())
-	})
-}
-
-func TestDoAfterClose(t *testing.T) {
-	t.Run("read-after-close", func(t *testing.T) {
-		f, err := newHelloWorldFile()
-		tt.AssertIsNotError(t, err)
-
-		mmap, err := New(NewReadOnly(f))
-		tt.AssertIsNotError(t, err)
-		closeMmap(t, mmap)
-
-		n, err := mmap.ReadAt(nil, 1)
-		tt.AssertEqual(t, ErrIsClosed, err)
-		tt.AssertEqual(t, 0, n)
-
-		p, err := mmap.Bytes(0, 3)
-		tt.AssertEqual(t, ErrIsClosed, err)
-		tt.AssertEqual(t, 0, len(p))
-
-		buf := new(bytes.Buffer)
-		n_, err := mmap.WriteTo(buf)
-		tt.AssertEqual(t, ErrIsClosed, err)
-		tt.AssertEqual(t, int64(0), n_)
-		tt.AssertEqual(t, 0, buf.Len())
-
-		buf = new(bytes.Buffer)
-		n_, err = mmap.WriteToAt(6, buf)
-		tt.AssertEqual(t, ErrIsClosed, err)
-		tt.AssertEqual(t, int64(0), n_)
-		tt.AssertEqual(t, 0, buf.Len())
-	})
-
-	t.Run("write-after-close", func(t *testing.T) {
-		f, err := newHelloWorldFile()
-		tt.AssertIsNotError(t, err)
-
-		mmap, err := New(NewReadWrite(f))
-		tt.AssertIsNotError(t, err)
-		closeMmap(t, mmap)
-
-		n, err := mmap.WriteAt([]byte{6}, 1)
-		tt.AssertEqual(t, ErrIsClosed, err)
-		tt.AssertEqual(t, 0, n)
-	})
-
-	t.Run("grow-after-close", func(t *testing.T) {
-		f, err := newHelloWorldFile()
-		tt.AssertIsNotError(t, err)
-
-		mmap, err := New(NewReadWrite(f))
-		tt.AssertIsNotError(t, err)
-		closeMmap(t, mmap)
-
-		n, err := mmap.WriteAt([]byte{6}, 1024)
-		tt.AssertEqual(t, ErrIsClosed, err)
-		tt.AssertEqual(t, 0, n)
 	})
 }
 

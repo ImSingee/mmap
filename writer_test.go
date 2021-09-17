@@ -1,12 +1,25 @@
 package mmap
 
 import (
-	"github.com/ImSingee/tt"
+	"strings"
 	"testing"
+
+	"github.com/ImSingee/tt"
 )
 
 func TestWrite(t *testing.T) {
+	t.Run("write-after-close", func(t *testing.T) {
+		f, err := newHelloWorldFile()
+		tt.AssertIsNotError(t, err)
 
+		mmap, err := New(NewReadWrite(f))
+		tt.AssertIsNotError(t, err)
+		closeMmap(t, mmap)
+
+		n, err := mmap.WriteAt([]byte{6}, 1)
+		tt.AssertEqual(t, ErrIsClosed, err)
+		tt.AssertEqual(t, 0, n)
+	})
 }
 
 func TestCopy(t *testing.T) {
@@ -109,6 +122,47 @@ func TestCopy(t *testing.T) {
 		expect := make([]byte, mmap.Cap())
 		copy(expect, HelloWorld)
 		copy(expect[20:], HelloWorld)
+
+		tt.AssertEqual(t, expect, mmap.data)
+	})
+}
+
+func TestWriter(t *testing.T) {
+	t.Run("simple", func(t *testing.T) {
+		f, err := newHelloWorldFile()
+		tt.AssertIsNotError(t, err)
+
+		mmap, err := New(NewReadWrite(f))
+		tt.AssertIsNotError(t, err)
+		defer closeMmap(t, mmap)
+
+		w := mmap.WriterAt(6) // 'w'
+		n, err := w.Write([]byte("Bryan"))
+		tt.AssertIsNotError(t, err)
+		tt.AssertEqual(t, 5, n)
+
+		tt.AssertEqual(t, LenOfHelloWorld, mmap.Cap())
+		tt.AssertEqual(t, "Hello Bryan!", string(mmap.data))
+	})
+
+	t.Run("grow", func(t *testing.T) {
+		f, err := newHelloWorldFile()
+		tt.AssertIsNotError(t, err)
+
+		mmap, err := New(NewReadWrite(f))
+		tt.AssertIsNotError(t, err)
+		defer closeMmap(t, mmap)
+
+		w := mmap.WriterAt(6) // 'w'
+		for i := 0; i < 123; i++ {
+			n, err := w.WriteString("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
+			tt.AssertIsNotError(t, err)
+			tt.AssertEqual(t, 26, n)
+		}
+
+		expect := make([]byte, mmap.Cap())
+		copy(expect, "Hello ")
+		copy(expect[6:], strings.Repeat("ABCDEFGHIJKLMNOPQRSTUVWXYZ", 123))
 
 		tt.AssertEqual(t, expect, mmap.data)
 	})
