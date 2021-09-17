@@ -76,11 +76,11 @@ func TestMmapNewReadWrite(t *testing.T) {
 	tt.AssertEqual(t, LenOfHelloWorld, n)
 	tt.AssertIsNotError(t, err)
 
-	tt.AssertEqual(t, OneMB, mmap.Cap())
-	tt.AssertEqual(t, OneMB, len(mmap.data))
-	tt.AssertEqual(t, OneMB, cap(mmap.data))
+	tt.AssertEqual(t, oneMB, mmap.Cap())
+	tt.AssertEqual(t, oneMB, len(mmap.data))
+	tt.AssertEqual(t, oneMB, cap(mmap.data))
 
-	expect := make([]byte, OneMB)
+	expect := make([]byte, oneMB)
 	copy(expect, []byte(HelloWorld))
 	copy(expect[LenOfHelloWorld:], []byte(HelloWorld))
 	tt.AssertEqual(t, expect, mmap.data)

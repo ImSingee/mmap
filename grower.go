@@ -2,16 +2,16 @@ package mmap
 
 type Grower func(current int, atLeast int) (next int)
 
-const OneMB = 1024 * 1024
-const OneGB = 1024 * OneMB
-const TwoGB = 2 * OneGB
+const oneMB = 1024 * 1024
+const oneGB = 1024 * oneMB
+const twoGB = 2 * oneGB
 
 func DefaultGrowPolicy(current int, atLeast int) (next int) {
 	var fac int
-	if current < TwoGB {
+	if current < twoGB {
 		fac = current * 2
 	} else {
-		fac = current + OneGB
+		fac = current + oneGB
 	}
 
 	if fac < atLeast {
@@ -22,7 +22,7 @@ func DefaultGrowPolicy(current int, atLeast int) (next int) {
 }
 
 func alignOneMB(n int) int {
-	return align(n, OneMB)
+	return align(n, oneMB)
 }
 
 func align(n, m int) int {

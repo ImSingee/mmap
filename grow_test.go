@@ -33,20 +33,20 @@ func TestGrow(t *testing.T) {
 		tt.AssertIsNotError(t, err)
 		defer closeMmap(t, mmap)
 
-		tt.AssertEqual(t, OneMB, mmap.Cap())
+		tt.AssertEqual(t, oneMB, mmap.Cap())
 
-		err = mmap.EnsureCapacity(4 * OneMB) // grow to 4 MB for test
-		tt.AssertEqual(t, 4*OneMB, mmap.Cap())
+		err = mmap.EnsureCapacity(4 * oneMB) // grow to 4 MB for test
+		tt.AssertEqual(t, 4*oneMB, mmap.Cap())
 
 		// won't grow if write to right bound
-		_, err = mmap.WriteAt([]byte{1}, 4*OneMB-1)
+		_, err = mmap.WriteAt([]byte{1}, 4*oneMB-1)
 		tt.AssertIsNotError(t, err)
-		tt.AssertEqual(t, 4*OneMB, mmap.Cap())
+		tt.AssertEqual(t, 4*oneMB, mmap.Cap())
 
 		// will grow to twice (8MB) if write something to [right bound + 1]
-		_, err = mmap.WriteAt([]byte{2}, 4*OneMB)
+		_, err = mmap.WriteAt([]byte{2}, 4*oneMB)
 		tt.AssertIsNotError(t, err)
-		tt.AssertEqual(t, 8*OneMB, mmap.Cap())
+		tt.AssertEqual(t, 8*oneMB, mmap.Cap())
 	})
 
 	t.Run("grow-to-large", func(t *testing.T) {
@@ -54,15 +54,15 @@ func TestGrow(t *testing.T) {
 		tt.AssertIsNotError(t, err)
 		defer closeMmap(t, mmap)
 
-		tt.AssertEqual(t, OneMB, mmap.Cap())
+		tt.AssertEqual(t, oneMB, mmap.Cap())
 
 		// if current is not less than 2GB, simple add one GB (not double)
-		err = mmap.EnsureCapacity(2 * OneGB) // grow to 2 GB for test
-		tt.AssertEqual(t, 2*OneGB, mmap.Cap())
+		err = mmap.EnsureCapacity(2 * oneGB) // grow to 2 GB for test
+		tt.AssertEqual(t, 2*oneGB, mmap.Cap())
 
-		_, err = mmap.WriteAt([]byte{1}, 2*OneGB)
+		_, err = mmap.WriteAt([]byte{1}, 2*oneGB)
 		tt.AssertIsNotError(t, err)
-		tt.AssertEqual(t, 3*OneGB, mmap.Cap())
+		tt.AssertEqual(t, 3*oneGB, mmap.Cap())
 	})
 
 	t.Run("grow-align-to-1MB", func(t *testing.T) {
@@ -78,7 +78,7 @@ func TestGrow(t *testing.T) {
 		// write anything, it will grow to 1MB (because of align)
 		_, err = mmap.WriteAt([]byte{1}, 16)
 		tt.AssertIsNotError(t, err)
-		tt.AssertEqual(t, OneMB, mmap.Cap())
+		tt.AssertEqual(t, oneMB, mmap.Cap())
 	})
 
 	t.Run("grow-to-need", func(t *testing.T) {
@@ -92,8 +92,8 @@ func TestGrow(t *testing.T) {
 		tt.AssertEqual(t, LenOfHelloWorld, mmap.Cap()) // < 1MB
 
 		// write anything at 2MB, it will grow to 3MB (because of need and align)
-		_, err = mmap.WriteAt([]byte{1}, 2*OneMB)
+		_, err = mmap.WriteAt([]byte{1}, 2*oneMB)
 		tt.AssertIsNotError(t, err)
-		tt.AssertEqual(t, 3*OneMB, mmap.Cap())
+		tt.AssertEqual(t, 3*oneMB, mmap.Cap())
 	})
 }

@@ -29,7 +29,7 @@ type Args struct {
 var _ Opener = (*Args)(nil)
 var _ shouldClean = (*Args)(nil)
 
-const DefaultInitLength = OneMB
+const DefaultInitLength = oneMB
 
 func (a *Args) Clean() error {
 	if a.File == "" {
