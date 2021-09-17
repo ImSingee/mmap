@@ -3,6 +3,7 @@ package mmap
 import (
 	"bytes"
 	"io"
+	"io/ioutil"
 	"strings"
 	"testing"
 
@@ -185,7 +186,7 @@ func TestReader(t *testing.T) {
 		defer closeMmap(t, mmap)
 
 		r := mmap.ReaderAt(1)
-		all, err := io.ReadAll(r)
+		all, err := ioutil.ReadAll(r)
 		tt.AssertIsNotError(t, err)
 		tt.AssertEqual(t, HelloWorld[1:], string(all))
 	})
@@ -215,7 +216,7 @@ func TestReader(t *testing.T) {
 			tt.AssertEqual(t, "NOPQRSTUVWXYZ", string(buf))
 		}
 
-		remain, err := io.ReadAll(r)
+		remain, err := ioutil.ReadAll(r)
 		tt.AssertIsNotError(t, err)
 		tt.AssertEqual(t, make([]byte, mmap.Cap()-len(data)), remain)
 
