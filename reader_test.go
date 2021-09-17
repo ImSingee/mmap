@@ -111,3 +111,34 @@ func TestWriteTo(t *testing.T) {
 	tt.AssertEqual(t, int64(LenOfHelloWorld), n)
 	tt.AssertEqual(t, HelloWorld, buf.String())
 }
+
+func TestWriteToAt(t *testing.T) {
+	f, err := newHelloWorldFile()
+	tt.AssertIsNotError(t, err)
+
+	mmap, err := New(NewReadOnly(f))
+	tt.AssertIsNotError(t, err)
+	defer closeMmap(t, mmap)
+
+	buf := &bytes.Buffer{}
+
+	n, err := mmap.WriteToAt(6, buf)
+	tt.AssertIsNotError(t, err)
+	tt.AssertEqual(t, int64(LenOfHelloWorld)-6, n)
+	tt.AssertEqual(t, HelloWorld[6:], buf.String())
+}
+
+func TestWriteToAtNotExist(t *testing.T) {
+	f, err := newHelloWorldFile()
+	tt.AssertIsNotError(t, err)
+
+	mmap, err := New(NewReadOnly(f))
+	tt.AssertIsNotError(t, err)
+	defer closeMmap(t, mmap)
+
+	buf := &bytes.Buffer{}
+	n, err := mmap.WriteToAt(666, buf)
+	tt.AssertEqual(t, io.EOF, err)
+	tt.AssertEqual(t, int64(0), n)
+	tt.AssertEqual(t, 0, buf.Len())
+}

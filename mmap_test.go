@@ -144,6 +144,12 @@ func TestDoAfterClose(t *testing.T) {
 		tt.AssertEqual(t, ErrIsClosed, err)
 		tt.AssertEqual(t, int64(0), n_)
 		tt.AssertEqual(t, 0, buf.Len())
+
+		buf = new(bytes.Buffer)
+		n_, err = mmap.WriteToAt(6, buf)
+		tt.AssertEqual(t, ErrIsClosed, err)
+		tt.AssertEqual(t, int64(0), n_)
+		tt.AssertEqual(t, 0, buf.Len())
 	})
 
 	t.Run("write-after-close", func(t *testing.T) {

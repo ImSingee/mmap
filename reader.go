@@ -44,3 +44,14 @@ func (m *Mmap) Bytes(offset int64, length int) ([]byte, error) {
 	result = result[:n]
 	return result, err
 }
+
+func (m *Mmap) WriteToAt(offset int64, w io.Writer) (n int64, err error) {
+	if m.closed {
+		return 0, ErrIsClosed
+	}
+	if offset > int64(len(m.data)) {
+		return 0, io.EOF
+	}
+
+	return io.Copy(w, bytes.NewReader(m.data[offset:]))
+}
